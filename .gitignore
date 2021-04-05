@@ -1,0 +1,12 @@
+# .gitignore
+
+# Python
+*.egg-info
+*.py[co]
+build/
+dist/
+
+# IDE
+.vscode
+*.swp
+

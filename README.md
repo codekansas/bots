@@ -1,9 +1,7 @@
 # bots
 
-Collection of bots for doing differnt stuff.
+Collection of bots for doing different stuff.
 
 ## Ideas
 
-- Track Nvidia GPUs
 - Reddit bot
-

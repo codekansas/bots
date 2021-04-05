@@ -5,7 +5,7 @@ import os
 import warnings
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional, Type
 
 from bots.backends.base import BaseBackend
 from bots.backends.registry import REGISTRY
@@ -37,7 +37,10 @@ def get_config_path() -> Path:
 
 
 @functools.lru_cache(None)
-def parse_config(cfg_file: Optional[Path] = None) -> Dict[str, BaseBackend]:
+def parse_config(
+    cfg_file: Optional[Path] = None,
+    should_instantiate: Optional[Callable[[Type[BaseBackend]], bool]] = None,
+) -> Dict[str, BaseBackend]:
     if cfg_file is None:
         cfg_file = get_config_path()
 
@@ -59,7 +62,11 @@ def parse_config(cfg_file: Optional[Path] = None) -> Dict[str, BaseBackend]:
                                        f"available: {available}")
 
         try:
-            backends[section] = REGISTRY.backends[btype](items)
+            backend_type = REGISTRY.backends[btype]
+            if should_instantiate is None:
+                backends[section] = backend_type(items)
+            elif should_instantiate(backend_type):
+                backends[section] = backend_type(items)
         except Exception as exp:
             raise ConfigParseException from exp
 

@@ -24,6 +24,8 @@ setup(
         "coloredlogs",
         "lxml",
         "croniter",
+        "flask",
+        "gunicorn",
     ],
     python_requires=">=3.7",
     extras_require={

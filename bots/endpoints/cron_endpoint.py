@@ -5,11 +5,12 @@ import sys
 import textwrap
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Type
 
-from bots.backends.interfaces.cron import CronBackend
-from bots.backends.run import run_sync
+from bots.backends.base import BaseBackend
+from bots.backends.interfaces.cron_interface import CronBackend
 from bots.config import get_config_path, parse_config
+from bots.run import run_sync
 from termcolor import colored
 
 
@@ -46,11 +47,17 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def is_cron_backend(t: Type[BaseBackend]) -> bool:
+    return issubclass(t, CronBackend)
+
+
 def get_bots() -> List[str]:
     now = datetime.now()
-    backends = parse_config()
-    bots = {k: v for k, v in backends.items() if isinstance(v, CronBackend)}
-    return [k for k, v in bots.items() if v.should_run(now)]
+    backends = parse_config(should_instantiate=is_cron_backend)
+    return [
+        k for k, v in backends.items()
+        if isinstance(v, CronBackend) and v.should_run(now)
+    ]
 
 
 def main() -> None:

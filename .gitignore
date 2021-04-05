@@ -5,6 +5,7 @@
 *.py[co]
 build/
 dist/
+.mypy_cache/
 
 # IDE
 .vscode

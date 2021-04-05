@@ -28,9 +28,9 @@ class BaseBackend(ABC):
     async def run(self) -> None:
         """Runs the backend."""
 
-    @abstractmethod
     def props(self) -> Dict[str, Any]:
         """Gets properties for this backend."""
+
         return {}
 
     @classmethod

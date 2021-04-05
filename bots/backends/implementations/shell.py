@@ -3,7 +3,7 @@
 import subprocess
 from typing import Dict
 
-from bots.backends.interfaces.cron import CronBackend
+from bots.backends.interfaces.cron_interface import CronBackend
 from bots.backends.registry import register
 
 

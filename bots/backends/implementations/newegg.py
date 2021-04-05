@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 
 import matplotlib.pyplot as plt
 import requests
-from bots.backends.interfaces.cron import CronBackend
+from bots.backends.interfaces.cron_interface import CronBackend
 from bots.backends.registry import register
 from bots.utils import Time
 from lxml import html
@@ -77,8 +77,8 @@ class NeweggBackend(CronBackend):
         return conn
 
     def __del__(self) -> None:
-        if self.conn is not None:
-            self.conn.close()
+        if self._conn is not None:
+            self._conn.close()
 
     def log_exception(self, exception: str) -> None:
         time = Time.get()

@@ -191,7 +191,7 @@ class NeweggAvailabilityGraphBackend(NeweggBackend):
         cur = self.conn.cursor()
 
         cur.execute(f"""
-            SELECT time, max(in_stock), avg(price)
+            SELECT time, avg(in_stock), avg(price)
             FROM {self.table}
             GROUP BY time
         """)

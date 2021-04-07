@@ -138,7 +138,7 @@ class NeweggAvailabilityBackend(NeweggBackend):
 
         # Checks the item price.
         prices = [
-            [float(p) for p in price_list]
+            [float(p.replace(",", "")) for p in price_list]
             for element in elements
             for price_list in [
                 re.findall(r"[\d,]+\.\d+", p.text_content())

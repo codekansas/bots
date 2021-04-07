@@ -16,11 +16,11 @@ class ShellBackend(CronBackend):
     because it allows us to depend on other existing bot jobs.
     """
 
-    def __init__(self, config: Dict[str, str]) -> None:
+    def __init__(self, name: str, config: Dict[str, str]) -> None:
         # Gets the shell command to run.
         self.command = config.pop("command")
 
-        super().__init__(config)
+        super().__init__(name, config)
 
     async def run(self) -> None:
         process = subprocess.Popen(self.command, shell=True)

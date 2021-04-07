@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 class SimpleWebsiteBackend(FlaskBackend):
     """Provides a simple website backend."""
 
-    def __init__(self, config: Dict[str, str]) -> None:
+    def __init__(self, name: str, config: Dict[str, str]) -> None:
         with open(config.pop("path"), "r") as f:
             self.site_contents: str = f.read()
 
-        super().__init__(config)
+        super().__init__(name, config)
 
     def run_flask(self) -> Union[str, flask.Response]:
         return self.site_contents

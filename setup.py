@@ -23,7 +23,6 @@ setup(
         "termcolor",
         "coloredlogs",
         "lxml",
-        "croniter",
         "flask",
         "gunicorn",
     ],

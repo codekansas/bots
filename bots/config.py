@@ -39,7 +39,7 @@ def get_config_path() -> Path:
 @functools.lru_cache(None)
 def parse_config(
     cfg_file: Optional[Path] = None,
-    should_instantiate: Optional[Callable[[Type[BaseBackend]], bool]] = None,
+    should_instantiate: Optional[Callable[[Type[BaseBackend], str], bool]] = None,
 ) -> Dict[str, BaseBackend]:
     if cfg_file is None:
         cfg_file = get_config_path()
@@ -64,9 +64,9 @@ def parse_config(
         try:
             backend_type = REGISTRY.backends[btype]
             if should_instantiate is None:
-                backends[section] = backend_type(items)
-            elif should_instantiate(backend_type):
-                backends[section] = backend_type(items)
+                backends[section] = backend_type(section, items)
+            elif should_instantiate(backend_type, section):
+                backends[section] = backend_type(section, items)
         except Exception as exp:
             raise ConfigParseException from exp
 

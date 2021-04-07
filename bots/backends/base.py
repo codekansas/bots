@@ -16,9 +16,10 @@ class BaseBackend(ABC):
     that there aren't typos in the config.
     """
 
-    def __init__(self, config: Dict[str, str]) -> None:
+    def __init__(self, name: str, config: Dict[str, str]) -> None:
         """Builds the backend using its associated config."""
 
+        self.name = name
         self.depends: List[str] = json.loads(config.pop("depends", "[]"))
 
         if config:

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class NeweggBackend(CronBackend):
-    def __init__(self, config: Dict[str, str]) -> None:
+    def __init__(self, name: str, config: Dict[str, str]) -> None:
         # Parses the DB path.
         self.db: Path = Path(config["db"])
         config.pop("db")
@@ -30,7 +30,7 @@ class NeweggBackend(CronBackend):
         self._conn: Optional[sqlite3.Connection] = None
         self.connect()
 
-        super().__init__(config)
+        super().__init__(name, config)
 
     def connect(self) -> None:
         if not self.db.exists():
@@ -99,7 +99,7 @@ class NeweggAvailabilityBackend(NeweggBackend):
     joined with `%` to get the N parameter for the URL.
     """
 
-    def __init__(self, config: Dict[str, str]) -> None:
+    def __init__(self, name: str, config: Dict[str, str]) -> None:
         # Parses the product IDs.
         search = json.loads(config["search"])
         assert isinstance(search, list), search
@@ -107,7 +107,7 @@ class NeweggAvailabilityBackend(NeweggBackend):
 
         self.url = f"https://newegg.com/p/pl?N={'%'.join(search)}&PageSize=96"
 
-        super().__init__(config)
+        super().__init__(name, config)
 
     async def run(self) -> None:
         time = Time.get()
@@ -180,12 +180,12 @@ class NeweggAvailabilityGraphBackend(NeweggBackend):
     task and plots the price and availability over time.
     """
 
-    def __init__(self, config: Dict[str, str]) -> None:
+    def __init__(self, name: str, config: Dict[str, str]) -> None:
         # Parses the graph path.
         self.graph = Path(config["graph"])
         config.pop("graph")
 
-        super().__init__(config)
+        super().__init__(name, config)
 
     async def run(self) -> None:
         cur = self.conn.cursor()

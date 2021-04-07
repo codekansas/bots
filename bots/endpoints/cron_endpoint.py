@@ -3,7 +3,6 @@
 import argparse
 import sys
 import textwrap
-from datetime import datetime
 from pathlib import Path
 from typing import List, Type
 
@@ -11,13 +10,19 @@ from bots.backends.base import BaseBackend
 from bots.backends.interfaces.cron_interface import CronBackend
 from bots.config import get_config_path, parse_config
 from bots.run import run_sync
+from bots.state import STATE
 from termcolor import colored
 
 
 def get_tab() -> str:
     root = Path(__file__).absolute().parent.parent.parent
     cfg_path = get_config_path()
-    run_cmd = f"BOTS_CONFIG={cfg_path} {sys.executable} -m bots.endpoints.cron"
+    state_cfg_path = STATE.path()
+    run_cmd = " ".join([
+        f"BOTS_CONFIG={cfg_path}",
+        f"BOTS_STATE_CONFIG={state_cfg_path}",
+        f"{sys.executable} -m bots.endpoints.cron_endpoint",
+    ])
     command = " && ".join([
         colored(f"cd {root}", "red"),
         colored(run_cmd, "cyan"),
@@ -42,32 +47,37 @@ def parse_args() -> argparse.Namespace:
         description=DESCRIPTION,
         formatter_class=argparse.RawTextHelpFormatter,
     )
-    parser.add_argument("-p", "--print-tab", action="store_true",
-                        help="Prints lines to add to your crontab")
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="If set, print verbose")
+    parser.add_argument("-b", "--bots", nargs="+", default=[],
+                        help="Specific bot names to run")
     return parser.parse_args()
 
 
-def is_cron_backend(t: Type[BaseBackend]) -> bool:
-    return issubclass(t, CronBackend)
+def get_bots(bots: List[str]) -> List[str]:
 
+    def should_instantiate(t: Type[BaseBackend], name: str) -> bool:
+        if bots:
+            return issubclass(t, CronBackend) and name in bots
+        else:
+            return issubclass(t, CronBackend)
 
-def get_bots() -> List[str]:
-    now = datetime.now()
-    backends = parse_config(should_instantiate=is_cron_backend)
+    backends = parse_config(should_instantiate=should_instantiate)
     return [
         k for k, v in backends.items()
-        if isinstance(v, CronBackend) and v.should_run(now)
+        if isinstance(v, CronBackend) and v.should_run()
     ]
 
 
 def main() -> None:
     args = parse_args()
 
-    if args.print_tab:
-        print(get_tab())
-        return
+    bots = get_bots(args.bots)
 
-    run_sync(get_bots())
+    if args.verbose:
+        for bot in bots:
+            print(f"Running {colored(bot, 'green')}")
+    run_sync(bots)
 
 
 if __name__ == "__main__":

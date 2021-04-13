@@ -141,8 +141,8 @@ class NeweggAvailabilityBackend(NeweggBackend):
             [float(p.replace(",", "")) for p in price_list]
             for element in elements
             for price_list in [
-                re.findall(r"[\d,]+\.\d+", p.text_content())
-                for p in element.xpath(".//li[contains(@class, 'price-current')]")
+                re.findall(r"[\d,]+\.\d+", p.text_content()) for p in
+                element.xpath(".//li[contains(@class, 'price-current')]")
             ]
         ]
 
@@ -204,12 +204,12 @@ class NeweggAvailabilityGraphBackend(NeweggBackend):
         plt.figure(figsize=(16, 8))
 
         plt.subplot(2, 1, 1)
-        plt.plot(time, in_stock, marker="o")
+        plt.scatter(time, in_stock)
         plt.title("In Stock")
         plt.gcf().autofmt_xdate()
 
         plt.subplot(2, 1, 2)
-        plt.plot(time, price, marker="o")
+        plt.scatter(time, price)
         plt.title("Price")
         plt.gcf().autofmt_xdate()
 
